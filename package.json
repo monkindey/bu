@@ -4,13 +4,13 @@
   "bin": {
     "bu": "./bin/bu.js"
   },
-  "scripts": {
-    "postcommit": "node index.js"
-  },
   "dependencies": {
     "chalk": "^2.0.1",
     "cross-spawn": "^5.1.0",
     "husky": "^0.14.3",
     "mri": "^1.1.0"
+  },
+  "scripts": {
+    "postcommit": "bu start --path=/Users/Roy/Documents/monkindey/backup"
   }
 }

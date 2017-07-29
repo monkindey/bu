@@ -17,27 +17,31 @@ const pkg = require(path.resolve(cwd, 'package.json'));
  * @options git bundle other options
  */
 module.exports = function(bundledDir, options = {}) {
-  bundledDir = bundledDir || pkg.backup.path;
+  bundledDir = bundledDir || (pkg.backup && pkg.backup.path);
 
   let bundledName = options.name || dir;
   const bundledPath = path.resolve(bundledDir, `${bundledName}.bundle`);
 
   return new Promise((resolve, reject) => {
-	console.log(chalk.blue(`Happy backup ${bundledName}...`));
+    console.log(chalk.blue(`Happy backup ${bundledName}...`));
 
-    try {
-      // Spawn child process to exec git bundle
-      spawn('git', ['bundle', 'create', bundledPath, 'HEAD', 'master'], {
-		stdio: 'inherit',
-		cwd
-	  });
-	
-    } catch (e) {
-      reject(e);
-      return;
-    }
+    // Spawn child process to exec git bundle
+    const child = spawn(
+      'git',
+      ['bundle', 'create', bundledPath, 'HEAD', 'master'],
+      {
+        stdio: 'inherit',
+        cwd
+      }
+    );
 
-    console.log(chalk.green(`Backup ${bundledName} Successfully!`));
-    resolve('success');
+    child.on('close', code => {
+      if (code !== 0) {
+        reject();
+        return;
+      }
+      console.log(chalk.green(`Backup ${bundledName} Successfully!`));
+      resolve('success');
+    });
   });
 };

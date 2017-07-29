@@ -3,18 +3,14 @@
 'use strict';
 
 const spawn = require('cross-spawn');
-const mri = require('mri');
 
-// const script = process.argv[2];
-/**
- * --path
- */
-const args = mri(process.argv.slice(2));
-const bu = require('../index.js');
-bu(args.path);
+const script = process.argv[2];
+const args = process.argv.slice(3);
 
-// switch (script) {
-//   case 'init':
-//   case 'start':
-//     spawn.sync('node', [require.resolve(`../scripts/${script}`)].concat(args));
-// }
+switch (script) {
+  case 'init':
+  case 'start':
+    spawn.sync('node', [require.resolve(`../scripts/${script}`)].concat(args), {
+      stdio: 'inherit'
+    });
+}
