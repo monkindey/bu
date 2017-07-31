@@ -26,9 +26,10 @@ module.exports = function(bundledDir, options = {}) {
     console.log(chalk.blue(`Happy backup ${bundledName}...`));
 
     // Spawn child process to exec git bundle
+    // TODO The user can pass the args to git bundle
     const child = spawn(
       'git',
-      ['bundle', 'create', bundledPath, 'HEAD', 'master'],
+      ['bundle', 'create', bundledPath, '--all'],
       {
         stdio: 'inherit',
         cwd

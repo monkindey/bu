@@ -2,6 +2,11 @@
 
 > Backup your project
 
+### Env
+
+* Git >= 2.9
+* *nux
+
 ### Why
 
 Maybe you will empty src carelessly with node library such as `fs-extra`, and
@@ -21,6 +26,6 @@ We can use husky postcommit hook to git bundle create.
 ### Usage
 
 ```bash
-bu init --path='path/to/your/backup/dir'
+bu init --path='path/to/your/backup/dir' --hooksPath='path/to/your/hooks/path'
 ```
 

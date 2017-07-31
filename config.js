@@ -1,8 +1,7 @@
 const path = require('path');
-const fse = require('fs-extra');
-
-const bundlePath = path.resolve(__dirname, 'bundle.json');
 
 module.exports = {
-  bundlePath
+  POST_COMMIT_FILE: 'post-commit',
+  bundlePath: path.resolve(__dirname, 'bundle.json'),
+  DEFAULT_HOOKS_PATH: '/usr/local/etc/git/hooks/'
 };

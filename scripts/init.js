@@ -15,16 +15,15 @@ const mri = require('mri');
 const { cmdToSpawn } = require('../util.js');
 
 const cwd = process.cwd();
-const { bundlePath } = require('../config');
+const {
+  bundlePath,
+  DEFAULT_HOOKS_PATH,
+  POST_COMMIT_FILE
+} = require('../config');
 
-const DEFAULT_HOOKS_PATH = '/usr/local/etc/git/hooks/';
-const POST_COMMIT_FILE = 'post-commit';
-// Default
+// Default hook path
 let hooksPath = DEFAULT_HOOKS_PATH;
 const cmd = {};
-
-const POST_COMMIT_EXAMPLE_PATH = path.resolve(__dirname, './post-commit');
-const POST_COMMIT_PATH = path.resolve(hooksPath, POST_COMMIT_FILE);
 
 const chmodPify = pify(fs.chmod);
 /**
@@ -36,6 +35,9 @@ const args = mri(process.argv.slice(2));
 if (args.hooksPath) {
   hooksPath = args.hooksPath;
 }
+
+const POST_COMMIT_EXAMPLE_PATH = path.resolve(__dirname, './post-commit');
+const POST_COMMIT_PATH = path.resolve(hooksPath, POST_COMMIT_FILE);
 
 cmd.hooks = `git config --global core.hooksPath ${hooksPath}`;
 
