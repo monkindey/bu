@@ -1,7 +1,7 @@
 /**
  * Setting the env
  * 1. install husky
- * 2. add scripts
+ * 2. add scripts in package.json
  */
 const path = require('path');
 const fs = require('fs');
