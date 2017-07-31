@@ -40,10 +40,10 @@ module.exports = function(bundledDir, options = {}) {
         reject();
         return;
       }
-      console.log(
-        chalk.green(`Backup ${bundledName} in ${bundledDir} Successfully!`)
-      );
-      resolve('success');
+
+      resolve({
+        msg: `Backup ${bundledName} in ${bundledDir} Successfully!`
+      });
     });
   });
 };

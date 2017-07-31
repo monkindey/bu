@@ -5,24 +5,47 @@
  */
 const path = require('path');
 const fs = require('fs');
+
+const pify = require('pify');
+const fse = require('fs-extra');
 const spawn = require('cross-spawn');
 const chalk = require('chalk');
 const mri = require('mri');
 
+const { cmdToSpawn } = require('../util.js');
+
 const cwd = process.cwd();
-const pkgPath = path.resolve(cwd, 'package.json');
+const { bundlePath } = require('../config');
+
+const DEFAULT_HOOKS_PATH = '/usr/local/etc/git/hooks/';
+const POST_COMMIT_FILE = 'post-commit';
+// Default
+let hooksPath = DEFAULT_HOOKS_PATH;
+const cmd = {};
+
+const POST_COMMIT_EXAMPLE_PATH = path.resolve(__dirname, './post-commit');
+const POST_COMMIT_PATH = path.resolve(hooksPath, POST_COMMIT_FILE);
+
+const chmodPify = pify(fs.chmod);
+/**
+ * 1. hooksPath
+ * 2. path
+ */
 const args = mri(process.argv.slice(2));
 
-// develop dependecies
-const devDeps = ['husky'];
+if (args.hooksPath) {
+  hooksPath = args.hooksPath;
+}
 
-function install(devDeps) {
+cmd.hooks = `git config --global core.hooksPath ${hooksPath}`;
+
+function changeHooksPath(cmd) {
   return new Promise((resolve, reject) => {
-    const cmd = 'yarn';
-    const args = ['add'].concat(devDeps);
-    const child = spawn(cmd, args, {
+    const args = cmdToSpawn(cmd);
+    args.push({
       stdio: 'inherit'
     });
+    const child = spawn.apply(null, args);
 
     child.on('close', code => {
       if (code !== 0) {
@@ -34,26 +57,41 @@ function install(devDeps) {
   });
 }
 
-// Write the scripts down
-function renderPkg() {
-  return new Promise((resolve, reject) => {
-    const pkg = require(pkgPath);
-    pkg.scripts = pkg.scripts || {};
-    Object.assign(pkg.scripts, {
-      postcommit: `bu start --path=${args.path}`
-    });
-
-    fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2), err => {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
+// Define map `cwd` to `bundle path`
+function renderBundleJSON(file, map) {
+  return fse.ensureFile(file).then(() =>
+    fse
+      .readJson(file)
+      .then(json => {
+        return fse.outputJson(file, Object.assign(json, map), {
+          spaces: 2
+        });
+      })
+      .catch(err => {
+        return fse.writeJson(file, {}).then(() => renderBundleJSON(file, map));
+      })
+  );
 }
 
-console.log(chalk.blue('Installing the package, It maybe take some times'));
-install(devDeps).then(() => {
-  console.log(chalk.green('Install successfully'));
-  return renderPkg();
-});
+fse
+  // create hooksPath dir if not exist and default path is
+  // `/usr/local/etc/git/hooks/`
+  .ensureDir(hooksPath)
+  // copy the post-commit into it
+  .then(() => fse.copy(POST_COMMIT_EXAMPLE_PATH, POST_COMMIT_PATH))
+  // change the file mode to be executed
+  .then(() => {
+    return chmodPify(POST_COMMIT_PATH, parseInt('0755', 8));
+  })
+  // change the global hooooks path
+  .then(() => {
+    return changeHooksPath(cmd.hooks);
+  })
+  .then(() => {
+    return renderBundleJSON(bundlePath, {
+      [cwd]: args.path
+    });
+  })
+  .catch(err => {
+    console.error(err);
+  });
