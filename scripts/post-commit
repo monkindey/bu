@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo 'Now bu start'
+echo 'Now bu starting'
 bu start
