@@ -23,7 +23,6 @@ const {
 
 // Default hook path
 let hooksPath = DEFAULT_HOOKS_PATH;
-const cmd = {};
 
 const chmodPify = pify(fs.chmod);
 /**
@@ -38,6 +37,7 @@ if (args.hooksPath) {
 
 const POST_COMMIT_EXAMPLE_PATH = path.resolve(__dirname, './post-commit');
 const POST_COMMIT_PATH = path.resolve(hooksPath, POST_COMMIT_FILE);
+const cmd = {};
 
 cmd.hooks = `git config --global core.hooksPath ${hooksPath}`;
 
@@ -60,19 +60,16 @@ function changeHooksPath(cmd) {
 }
 
 // Define map `cwd` to `bundle path`
+// https://github.com/jprichardson/node-fs-extra/issues/472
 function renderBundleJSON(file, map) {
-  return fse.ensureFile(file).then(() =>
-    fse
-      .readJson(file)
-      .then(json => {
-        return fse.outputJson(file, Object.assign(json, map), {
-          spaces: 2
-        });
+  return fse
+    .pathExists(file)
+    .then(isExist => (isExist ? fse.readJson(file) : Promise.resolve({})))
+    .then(json =>
+      fse.outputJson(file, Object.assign(json, map), {
+        spaces: 2
       })
-      .catch(err => {
-        return fse.writeJson(file, {}).then(() => renderBundleJSON(file, map));
-      })
-  );
+    );
 }
 
 fse

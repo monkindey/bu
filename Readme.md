@@ -14,10 +14,7 @@ everything is [gone](https://github.com/jprichardson/node-fs-extra/issues/469).
 
 ### How
 
-* `husky`
-* `git`
-
-We can use husky postcommit hook to git bundle create.
+We can use global postcommit hook to git bundle create. And no inject something into your project, because it's not necessary to other contributors.
 
 ### Installation
 
