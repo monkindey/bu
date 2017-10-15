@@ -14,7 +14,7 @@ everything is [gone](https://github.com/jprichardson/node-fs-extra/issues/469).
 
 ### How
 
-We can use global postcommit hook to git bundle create. And no inject something into your project, because it's not necessary to other contributors.
+We can use global postcommit hook to git bundle create. And not inject something into your project, because it's not necessary to other contributors.
 
 ### Installation
 

@@ -32,7 +32,7 @@ hasPostCommitHook(cwd)
           console.log(chalk.green(res.msg));
         });
       } else {
-        console.log(chalk.red(`Please init your bundle path in ${cwd}`));
+        // console.log(chalk.red(`Please init your bundle path in ${cwd}`));
       }
     });
   });

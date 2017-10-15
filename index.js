@@ -10,7 +10,12 @@ const spawn = require('cross-spawn');
 const cwd = process.cwd();
 const dir = path.basename(cwd);
 
-const pkg = require(path.resolve(cwd, 'package.json'));
+let pkg = {};
+
+// Sometime the repo does not have package.json
+try {
+  pkg = require(path.resolve(cwd, 'package.json'));
+} catch (e) {}
 
 /**
  * @path where to bundle
@@ -27,14 +32,10 @@ module.exports = function(bundledDir, options = {}) {
 
     // Spawn child process to exec git bundle
     // TODO The user can pass the args to git bundle
-    const child = spawn(
-      'git',
-      ['bundle', 'create', bundledPath, '--all'],
-      {
-        stdio: 'inherit',
-        cwd
-      }
-    );
+    const child = spawn('git', ['bundle', 'create', bundledPath, '--all'], {
+      stdio: 'inherit',
+      cwd
+    });
 
     child.on('close', code => {
       if (code !== 0) {
