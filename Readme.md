@@ -23,6 +23,15 @@ We can use global postcommit hook to git bundle create. And not inject something
 ### Usage
 
 ```bash
+git config --global core.hooksPath /path/to/my/centralized/hooks
+```
+
+[Git commit hooks - global settings](https://stackoverflow.com/questions/2293498/git-commit-hooks-global-settings)
+
+
+用`git2.9`加上的global hooks功能去拦截每一个commit, 再git bundle到对应的目录里
+
+```bash
 bu init --path='path/to/your/backup/dir' --hooksPath='path/to/your/hooks/path'
 ```
 
